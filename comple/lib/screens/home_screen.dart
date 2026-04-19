@@ -132,10 +132,10 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(themeNotifier.value == ThemeMode.light ? Icons.dark_mode : Icons.light_mode, size: 20),
+            icon: Icon(Theme.of(context).brightness == Brightness.light ? Icons.dark_mode : Icons.light_mode, size: 20),
             onPressed: () {
               setState(() {
-                if (themeNotifier.value == ThemeMode.light) {
+                if (Theme.of(context).brightness == Brightness.light) {
                   themeNotifier.value = ThemeMode.dark;
                 } else {
                   themeNotifier.value = ThemeMode.light;
