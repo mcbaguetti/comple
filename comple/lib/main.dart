@@ -1,14 +1,67 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'services/storage_service.dart';
+import 'services/notification_service.dart';
+import 'services/error_service.dart';
 import 'screens/home_screen.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final storageService = StorageService();
-  await storageService.init();
-  
-  initializeDateFormatting().then((_) => runApp(BirthdayTrackerApp(storageService: storageService)));
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    logError(details.exception, details.stack);
+  };
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return const Material(
+      child: Center(
+        child: Text('Something went wrong'),
+      ),
+    );
+  };
+
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    logError(error, stack);
+    return true; // handled
+  };
+
+  runZonedGuarded(() async {
+    final storageService = StorageService();
+
+    try {
+      await storageService.init();
+    } catch (e, st) {
+      logError(e, st);
+    }
+
+    try {
+      await NotificationService().init();
+    } catch (e, st) {
+      logError(e, st);
+    }
+
+    try {
+      final birthdays = storageService.getBirthdays();
+      for (final b in birthdays) {
+        try {
+          await NotificationService().scheduleBirthdayNotification(b);
+        } catch (e, st) {
+          logError(e, st);
+        }
+      }
+    } catch (e, st) {
+      logError(e, st);
+    }
+
+    await initializeDateFormatting();
+    runApp(BirthdayTrackerApp(storageService: storageService));
+  }, (error, stack) {
+    logError(error, stack);
+  });
 }
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.system);

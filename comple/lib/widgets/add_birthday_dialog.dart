@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/birthday.dart';
 import '../services/storage_service.dart';
+import '../services/error_service.dart';
 
 class AddBirthdayDialog extends StatefulWidget {
   final StorageService storageService;
@@ -55,10 +56,15 @@ class _AddBirthdayDialogState extends State<AddBirthdayDialog> {
       date: finalDate,
     );
 
-    await widget.storageService.addBirthday(newBirthday);
-    
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop(true);
+    try {
+      await widget.storageService.addBirthday(newBirthday);
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop(true);
+    } catch (e, st) {
+      logError(e, st);
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop(false);
+    }
   }
 
   @override

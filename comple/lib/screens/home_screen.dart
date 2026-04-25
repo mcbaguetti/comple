@@ -5,6 +5,7 @@ import '../models/birthday.dart';
 import '../services/storage_service.dart';
 import '../widgets/add_birthday_dialog.dart';
 import '../main.dart';
+import '../services/error_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final StorageService storageService;
@@ -32,10 +33,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadBirthdays() {
-    setState(() {
-      _allBirthdays = widget.storageService.getBirthdays();
-      _upcomingBirthdaysNotifier.value = _getUpcomingBirthdays();
-    });
+    try {
+      setState(() {
+        _allBirthdays = widget.storageService.getBirthdays();
+        _upcomingBirthdaysNotifier.value = _getUpcomingBirthdays();
+      });
+    } catch (e, st) {
+      logError(e, st);
+    }
   }
 
   List<Birthday> _getUpcomingBirthdays() {
@@ -99,18 +104,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showAddDialog() async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AddBirthdayDialog(storageService: widget.storageService),
-    );
-    if (result == true) {
-      _loadBirthdays();
+    try {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (context) => AddBirthdayDialog(storageService: widget.storageService),
+      );
+      if (result == true) {
+        _loadBirthdays();
+      }
+    } catch (e, st) {
+      logError(e, st);
     }
   }
 
   void _deleteBirthday(Birthday birthday) async {
-    await widget.storageService.removeBirthday(birthday.id);
-    _loadBirthdays();
+    try {
+      await widget.storageService.removeBirthday(birthday.id);
+      _loadBirthdays();
+    } catch (e, st) {
+      logError(e, st);
+    }
   }
 
   @override
