@@ -6,8 +6,9 @@ import '../services/error_service.dart';
 
 class AddBirthdayDialog extends StatefulWidget {
   final StorageService storageService;
+  final DateTime? initialDate;
 
-  const AddBirthdayDialog({Key? key, required this.storageService}) : super(key: key);
+  const AddBirthdayDialog({Key? key, required this.storageService, this.initialDate}) : super(key: key);
 
   @override
   State<AddBirthdayDialog> createState() => _AddBirthdayDialogState();
@@ -19,6 +20,12 @@ class _AddBirthdayDialogState extends State<AddBirthdayDialog> {
   bool _knowsYear = true;
 
   @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.initialDate;
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     super.dispose();
@@ -27,7 +34,7 @@ class _AddBirthdayDialogState extends State<AddBirthdayDialog> {
   void _presentDatePicker() async {
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );

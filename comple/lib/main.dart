@@ -39,7 +39,7 @@ void main() {
     }
 
     try {
-      await NotificationService().init();
+      // await NotificationService().init();
     } catch (e, st) {
       logError(e, st);
     }
@@ -48,7 +48,7 @@ void main() {
       final birthdays = storageService.getBirthdays();
       for (final b in birthdays) {
         try {
-          await NotificationService().scheduleBirthdayNotification(b);
+          // await NotificationService().scheduleBirthdayNotification(b);
         } catch (e, st) {
           logError(e, st);
         }
@@ -80,14 +80,24 @@ class BirthdayTrackerApp extends StatelessWidget {
           title: 'Comple',
           themeMode: currentMode,
           theme: ThemeData(
-            scaffoldBackgroundColor: const Color(0xFFF9F6F0), // Washi paper cream
-            dialogBackgroundColor: const Color(0xFFF9F6F0),
-            primaryColor: const Color(0xFF8A1C14), // Hanko stamp red
+            scaffoldBackgroundColor: const Color(0xFF00A59B), // Brutalist Teal
+            dialogBackgroundColor: const Color(0xFF00A59B),
+            primaryColor: const Color(0xFFFFFF00), // Brutalist Yellow
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF8A1C14),
-              secondary: Color(0xFF1C1C1C), // Sumi ink black
-              surface: Color(0xFFF9F6F0),
-              onSurface: Color(0xFF1C1C1C), // Text color
+              primary: Color(0xFFFFFF00), // Yellow
+              onPrimary: Color(0xFF000000), // Black on yellow
+              secondary: Color(0xFF000000), // Black
+              onSecondary: Color(0xFFFFFFFF), // White on black
+              surface: Color(0xFF00A59B),
+              onSurface: Color(0xFF000000), // Text color
+            ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color(0xFF000000),
+              foregroundColor: Color(0xFFFFFFFF), // White text on black app bar
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: Color(0xFFFFFF00), // Yellow background
+              foregroundColor: Color(0xFF000000), // Black icon
             ),
             useMaterial3: true,
           ),
@@ -97,9 +107,14 @@ class BirthdayTrackerApp extends StatelessWidget {
             primaryColor: const Color(0xFF8A1C14), // Hanko stamp red
             colorScheme: const ColorScheme.dark(
               primary: Color(0xFF8A1C14),
+              onPrimary: Color(0xFFFFFFFF), // White text on red
               secondary: Color(0xFFF9F6F0), // Washi paper cream
               surface: Color(0xFF1C1C1C),
               onSurface: Color(0xFFF9F6F0), // Text color
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: Color(0xFF8A1C14), // Red background
+              foregroundColor: Color(0xFFFFFFFF), // White icon
             ),
             useMaterial3: true,
           ),

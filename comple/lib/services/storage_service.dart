@@ -31,7 +31,7 @@ class StorageService {
     }
 
     try {
-      await NotificationService().scheduleBirthdayNotification(birthday);
+      // await NotificationService().scheduleBirthdayNotification(birthday);
     } catch (e, st) {
       logError(e, st);
     }
@@ -39,7 +39,7 @@ class StorageService {
 
   Future<void> removeBirthday(String id) async {
     try {
-      await NotificationService().cancelBirthdayNotification(id);
+      // await NotificationService().cancelBirthdayNotification(id);
     } catch (e, st) {
       logError(e, st);
     }

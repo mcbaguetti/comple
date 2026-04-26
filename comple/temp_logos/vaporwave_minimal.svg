@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Deep purple background -->
+  <rect width="512" height="512" fill="#0b001a" />
+  
+  <!-- Cyber grid -->
+  <path d="M 0 350 L 512 350 M 0 400 L 512 400 M 0 470 L 512 470" stroke="#b967ff" stroke-width="2" opacity="0.5" />
+  <path d="M 256 350 L 256 512 M 156 350 L 56 512 M 356 350 L 456 512 M 56 350 L -100 512 M 456 350 L 612 512" stroke="#b967ff" stroke-width="2" opacity="0.5" />
+
+  <!-- Cyan neon circle -->
+  <circle cx="256" cy="200" r="140" fill="none" stroke="#01cdfe" stroke-width="8" filter="drop-shadow(0 0 10px #01cdfe)" />
+  
+  <!-- Sun/gradient effect inside (SVG solid for simplicity) -->
+  <circle cx="256" cy="200" r="136" fill="#ff71ce" opacity="0.2" />
+
+  <!-- Text -->
+  <text x="256" y="215" font-family="sans-serif" font-size="44" font-weight="900" font-style="italic" letter-spacing="4" fill="#ff71ce" text-anchor="middle" filter="drop-shadow(2px 2px 0px #01cdfe)">_comple_</text>
+</svg>

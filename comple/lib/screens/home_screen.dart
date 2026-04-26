@@ -108,7 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final result = await showDialog<bool>(
         context: context,
-        builder: (context) => AddBirthdayDialog(storageService: widget.storageService),
+        builder: (context) => AddBirthdayDialog(
+          storageService: widget.storageService,
+          initialDate: _selectedDay,
+        ),
       );
       if (result == true) {
         _loadBirthdays();
@@ -157,17 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
           ),
-            IconButton(
-              icon: const Icon(Icons.bug_report, size: 20),
-              tooltip: 'Send test notification',
-              onPressed: () async {
-                try {
-                  await NotificationService().scheduleTestNotification(seconds: 5);
-                } catch (e, st) {
-                  logError(e, st);
-                }
-              },
-            ),
+            // IconButton(
+            //   icon: const Icon(Icons.bug_report, size: 20),
+            //   tooltip: 'Send test notification',
+            //   onPressed: () async {
+            //     try {
+            //       // await NotificationService().scheduleTestNotification(seconds: 5);
+            //     } catch (e, st) {
+            //       logError(e, st);
+            //     }
+            //   },
+            // ),
           const SizedBox(width: 8.0),
         ],
         flexibleSpace: Container(
@@ -205,12 +208,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 calendarStyle: CalendarStyle(
                   outsideDaysVisible: false,
+                  selectedTextStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
                   selectedDecoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).colorScheme.primary, // Hanko red
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  todayTextStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  todayDecoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                   ),
                   markerDecoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     shape: BoxShape.circle,
                   ),
                 ),

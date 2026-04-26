@@ -27,6 +27,12 @@ dev_dependencies:
   flutter_lints: any
   build_runner: any
   hive_generator: any
+  flutter_launcher_icons: any
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.png"
 
 
 flutter:
