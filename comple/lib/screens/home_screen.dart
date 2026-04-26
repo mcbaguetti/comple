@@ -6,6 +6,7 @@ import '../services/storage_service.dart';
 import '../widgets/add_birthday_dialog.dart';
 import '../main.dart';
 import '../services/error_service.dart';
+import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final StorageService storageService;
@@ -156,6 +157,17 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
           ),
+            IconButton(
+              icon: const Icon(Icons.bug_report, size: 20),
+              tooltip: 'Send test notification',
+              onPressed: () async {
+                try {
+                  await NotificationService().scheduleTestNotification(seconds: 5);
+                } catch (e, st) {
+                  logError(e, st);
+                }
+              },
+            ),
           const SizedBox(width: 8.0),
         ],
         flexibleSpace: Container(
