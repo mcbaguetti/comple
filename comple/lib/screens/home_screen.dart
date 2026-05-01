@@ -6,7 +6,7 @@ import '../services/storage_service.dart';
 import '../widgets/add_birthday_dialog.dart';
 import '../main.dart';
 import '../services/error_service.dart';
-import '../services/notification_service.dart';
+// import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final StorageService storageService;
