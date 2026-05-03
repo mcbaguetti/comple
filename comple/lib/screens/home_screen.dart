@@ -25,6 +25,21 @@ class _HomeScreenState extends State<HomeScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   List<Birthday> _allBirthdays = [];
   double _calendarHeight = 350.0;
+  DateTime _calendarFirstDay = DateTime(1900, 1, 1);
+
+  void _alignTwoWeeks(DateTime targetFocusedDay) {
+    final baseUtc = DateTime.utc(1900, 1, 1);
+    final targetUtc = DateTime.utc(targetFocusedDay.year, targetFocusedDay.month, targetFocusedDay.day);
+    final mondayUtc = targetUtc.subtract(Duration(days: targetUtc.weekday - 1));
+    final daysDiff = mondayUtc.difference(baseUtc).inDays;
+    final weeksDiff = daysDiff ~/ 7;
+    
+    if (weeksDiff % 2 != 0) {
+      _calendarFirstDay = DateTime(1900, 1, 8);
+    } else {
+      _calendarFirstDay = DateTime(1900, 1, 1);
+    }
+  }
 
   @override
   void initState() {
@@ -92,14 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onFormatChanged(CalendarFormat format) {
     if (_calendarFormat != format) {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
       setState(() {
         _calendarFormat = format;
         if (format == CalendarFormat.month) {
           _calendarHeight = 350.0;
         } else if (format == CalendarFormat.twoWeeks) {
           _calendarHeight = 220.0;
+          _alignTwoWeeks(_focusedDay);
         } else if (format == CalendarFormat.week) {
           _calendarHeight = 140.0;
         }
@@ -173,6 +187,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   _focusedDay = today;
                   _selectedDay = today;
+                  if (_calendarFormat == CalendarFormat.twoWeeks) {
+                    _alignTwoWeeks(today);
+                  }
                 });
               },
             ),
@@ -208,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: TableCalendar<Birthday>(
-                firstDay: DateTime(1900, 1, 1),
+                firstDay: _calendarFirstDay,
                 lastDay: DateTime(2100, 12, 31),
                 focusedDay: _focusedDay,
                 calendarFormat: _calendarFormat,
@@ -274,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else if (_calendarHeight > 180) {
                   _calendarHeight = 220.0;
                   _calendarFormat = CalendarFormat.twoWeeks;
+                  _alignTwoWeeks(_focusedDay);
                 } else {
                   _calendarHeight = 140.0;
                   _calendarFormat = CalendarFormat.week;
