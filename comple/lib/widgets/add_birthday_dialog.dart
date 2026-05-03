@@ -17,7 +17,7 @@ class AddBirthdayDialog extends StatefulWidget {
 class _AddBirthdayDialogState extends State<AddBirthdayDialog> {
   final _nameController = TextEditingController();
   DateTime? _selectedDate;
-  bool _knowsYear = true;
+  bool _knowsYear = false;
 
   @override
   void initState() {

@@ -344,15 +344,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (birthday.gifts.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 4.0),
-                              child: Icon(
-                                Icons.card_giftcard,
-                                size: 16,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Icon(
+                              Icons.card_giftcard,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                             ),
+                          ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                             onPressed: () => _deleteBirthday(birthday),
