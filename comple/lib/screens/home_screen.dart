@@ -24,7 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime? _selectedDay;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   List<Birthday> _allBirthdays = [];
-  double _calendarHeight = 350.0;
+  Map<int, List<Birthday>> _birthdaysByMonthDay = {};
+  final ValueNotifier<double> _calendarHeightNotifier = ValueNotifier(350.0);
+  bool _isDragging = false;
   DateTime _calendarFirstDay = DateTime(1900, 1, 1);
 
   void _alignTwoWeeks(DateTime targetFocusedDay) {
@@ -53,6 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       setState(() {
         _allBirthdays = widget.storageService.getBirthdays();
+        _birthdaysByMonthDay.clear();
+        for (var b in _allBirthdays) {
+          int key = b.date.month * 100 + b.date.day;
+          _birthdaysByMonthDay.putIfAbsent(key, () => []).add(b);
+        }
         _upcomingBirthdaysNotifier.value = _getUpcomingBirthdays();
       });
     } catch (e, st) {
@@ -83,16 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Birthday> _getBirthdaysForDay(DateTime day) {
-    // Birthdays happen every year, so we ignore the year of the birth date
-    // when checking against the calendar 'day'.
-    return _allBirthdays.where((b) {
-      return b.date.month == day.month && b.date.day == day.day;
-    }).toList();
+    int key = day.month * 100 + day.day;
+    return _birthdaysByMonthDay[key] ?? [];
   }
 
   @override
   void dispose() {
     _upcomingBirthdaysNotifier.dispose();
+    _calendarHeightNotifier.dispose();
     super.dispose();
   }
 
@@ -110,12 +115,12 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _calendarFormat = format;
         if (format == CalendarFormat.month) {
-          _calendarHeight = 350.0;
+          _calendarHeightNotifier.value = 350.0;
         } else if (format == CalendarFormat.twoWeeks) {
-          _calendarHeight = 220.0;
+          _calendarHeightNotifier.value = 220.0;
           _alignTwoWeeks(_focusedDay);
         } else if (format == CalendarFormat.week) {
-          _calendarHeight = 140.0;
+          _calendarHeightNotifier.value = 140.0;
         }
       });
     }
@@ -218,10 +223,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           const Divider(height: 1.0, thickness: 1.0),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
-            height: _calendarHeight,
+          ValueListenableBuilder<double>(
+            valueListenable: _calendarHeightNotifier,
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: TableCalendar<Birthday>(
@@ -270,30 +273,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            builder: (context, height, calendarChild) {
+              return AnimatedContainer(
+                duration: _isDragging ? Duration.zero : const Duration(milliseconds: 200),
+                curve: Curves.easeOutCubic,
+                height: height,
+                child: calendarChild,
+              );
+            },
           ),
           GestureDetector(
-            onVerticalDragUpdate: (details) {
+            onVerticalDragStart: (details) {
               setState(() {
-                _calendarHeight += details.delta.dy;
-                if (_calendarHeight < 130) _calendarHeight = 130;
-                if (_calendarHeight > 360) _calendarHeight = 360;
+                _isDragging = true;
               });
+            },
+            onVerticalDragUpdate: (details) {
+              double newHeight = _calendarHeightNotifier.value + details.delta.dy;
+              if (newHeight < 130) newHeight = 130;
+              if (newHeight > 360) newHeight = 360;
+              _calendarHeightNotifier.value = newHeight;
             },
             onVerticalDragEnd: (details) {
               setState(() {
+                _isDragging = false;
                 // Determine closest snap point and assign format explicitly
-                if (_calendarHeight > 315) {
-                  _calendarHeight = 350.0;
+                double currentHeight = _calendarHeightNotifier.value;
+                if (currentHeight > 315) {
+                  _calendarHeightNotifier.value = 350.0;
                   _calendarFormat = CalendarFormat.month;
-                } else if (_calendarHeight > 250) {
-                  _calendarHeight = 280.0; // 3 weeks height
+                } else if (currentHeight > 250) {
+                  _calendarHeightNotifier.value = 280.0; // 3 weeks height
                   _calendarFormat = CalendarFormat.month; 
-                } else if (_calendarHeight > 180) {
-                  _calendarHeight = 220.0;
+                } else if (currentHeight > 180) {
+                  _calendarHeightNotifier.value = 220.0;
                   _calendarFormat = CalendarFormat.twoWeeks;
                   _alignTwoWeeks(_focusedDay);
                 } else {
-                  _calendarHeight = 140.0;
+                  _calendarHeightNotifier.value = 140.0;
                   _calendarFormat = CalendarFormat.week;
                 }
               });
