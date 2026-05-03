@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (format == CalendarFormat.month) {
           _calendarHeightNotifier.value = 350.0;
         } else if (format == CalendarFormat.twoWeeks) {
-          _calendarHeightNotifier.value = 220.0;
+          _calendarHeightNotifier.value = 190.0;
           _alignTwoWeeks(_focusedDay);
         } else if (format == CalendarFormat.week) {
           _calendarHeightNotifier.value = 140.0;
@@ -302,11 +302,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (currentHeight > 315) {
                   _calendarHeightNotifier.value = 350.0;
                   _calendarFormat = CalendarFormat.month;
-                } else if (currentHeight > 250) {
+                } else if (currentHeight > 235) {
                   _calendarHeightNotifier.value = 280.0; // 3 weeks height
                   _calendarFormat = CalendarFormat.month; 
-                } else if (currentHeight > 180) {
-                  _calendarHeightNotifier.value = 220.0;
+                } else if (currentHeight > 165) {
+                  _calendarHeightNotifier.value = 190.0;
                   _calendarFormat = CalendarFormat.twoWeeks;
                   _alignTwoWeeks(_focusedDay);
                 } else {
