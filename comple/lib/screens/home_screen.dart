@@ -215,6 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                 onDaySelected: _onDaySelected,
                 onFormatChanged: _onFormatChanged,
+                onPageChanged: (focusedDay) {
+                  _focusedDay = focusedDay;
+                },
                 eventLoader: _getBirthdaysForDay,
                 startingDayOfWeek: StartingDayOfWeek.monday,
                 headerStyle: const HeaderStyle(

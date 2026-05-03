@@ -75,7 +75,8 @@ class BirthdayTrackerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeNotifier,
-      builder: (context, currentMode, _) {
+      child: HomeScreen(storageService: storageService),
+      builder: (context, currentMode, child) {
         return MaterialApp(
           title: 'Comple',
           themeMode: currentMode,
@@ -118,9 +119,10 @@ class BirthdayTrackerApp extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          home: HomeScreen(storageService: storageService),
+          home: child,
         );
       },
     );
+
   }
 }
