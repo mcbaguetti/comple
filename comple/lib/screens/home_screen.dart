@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/birthday.dart';
 import '../services/storage_service.dart';
 import '../widgets/add_birthday_dialog.dart';
+import '../widgets/gift_ideas_sheet.dart';
 import '../main.dart';
 import '../services/error_service.dart';
 // import '../services/notification_service.dart';
@@ -91,6 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onFormatChanged(CalendarFormat format) {
     if (_calendarFormat != format) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
       setState(() {
         _calendarFormat = format;
         if (format == CalendarFormat.month) {
@@ -130,19 +133,49 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showGiftSheet(Birthday birthday) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => GiftIdeasSheet(
+        birthday: birthday,
+        storageService: widget.storageService,
+      ),
+    ).then((_) => _loadBirthdays());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: PopupMenuButton<CalendarFormat>(
-          icon: const Icon(Icons.date_range, size: 20),
-          initialValue: _calendarFormat,
-          tooltip: 'Select view format',
-          onSelected: _onFormatChanged,
-          itemBuilder: (context) => [
-            const PopupMenuItem(value: CalendarFormat.month, child: Center(child: Text('Month'))),
-            const PopupMenuItem(value: CalendarFormat.twoWeeks, child: Center(child: Text('2 Weeks'))),
-            const PopupMenuItem(value: CalendarFormat.week, child: Center(child: Text('Week'))),
+        leadingWidth: 96,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PopupMenuButton<CalendarFormat>(
+              icon: const Icon(Icons.date_range, size: 20),
+              initialValue: _calendarFormat,
+              tooltip: 'Select view format',
+              onSelected: _onFormatChanged,
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: CalendarFormat.month, child: Center(child: Text('Month'))),
+                const PopupMenuItem(value: CalendarFormat.twoWeeks, child: Center(child: Text('2 Weeks'))),
+                const PopupMenuItem(value: CalendarFormat.week, child: Center(child: Text('Week'))),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.today, size: 20),
+              tooltip: 'Jump to today',
+              onPressed: () {
+                final now = DateTime.now();
+                final today = DateTime(now.year, now.month, now.day);
+                setState(() {
+                  _focusedDay = today;
+                  _selectedDay = today;
+                });
+              },
+            ),
           ],
         ),
         title: const Text('_comple_', style: TextStyle(fontSize: 12.0, fontFamily: 'monospace')),
@@ -151,26 +184,13 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Icon(Theme.of(context).brightness == Brightness.light ? Icons.dark_mode : Icons.light_mode, size: 20),
             onPressed: () {
-              setState(() {
-                if (Theme.of(context).brightness == Brightness.light) {
-                  themeNotifier.value = ThemeMode.dark;
-                } else {
-                  themeNotifier.value = ThemeMode.light;
-                }
-              });
+              if (Theme.of(context).brightness == Brightness.light) {
+                themeNotifier.value = ThemeMode.dark;
+              } else {
+                themeNotifier.value = ThemeMode.light;
+              }
             },
           ),
-            // IconButton(
-            //   icon: const Icon(Icons.bug_report, size: 20),
-            //   tooltip: 'Send test notification',
-            //   onPressed: () async {
-            //     try {
-            //       // await NotificationService().scheduleTestNotification(seconds: 5);
-            //     } catch (e, st) {
-            //       logError(e, st);
-            //     }
-            //   },
-            // ),
           const SizedBox(width: 8.0),
         ],
         flexibleSpace: Container(
@@ -207,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 calendarStyle: CalendarStyle(
-                  outsideDaysVisible: false,
+                  outsideDaysVisible: true,
                   selectedTextStyle: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
@@ -294,13 +314,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final birthday = value[index];
                     return ListTile(
+                      onTap: () => _showGiftSheet(birthday),
+                      contentPadding: const EdgeInsets.only(left: 16.0, right: 8.0),
                       title: Text(birthday.name),
-                      subtitle: Text(birthday.date.year == 0 
+                      subtitle: Text(birthday.date.year == 0
                           ? DateFormat.MMMd().format(birthday.date)
                           : '${DateFormat.MMMd().format(birthday.date)} (Turning ${DateTime.now().year - birthday.date.year})'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteBirthday(birthday),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (birthday.gifts.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 4.0),
+                              child: Icon(
+                                Icons.card_giftcard,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              ),
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                            onPressed: () => _deleteBirthday(birthday),
+                          ),
+                        ],
                       ),
                     );
                   },
