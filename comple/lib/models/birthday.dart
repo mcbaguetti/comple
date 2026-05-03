@@ -13,9 +13,13 @@ class Birthday extends HiveObject {
   @HiveField(2)
   DateTime date;
 
+  @HiveField(3)
+  List<String> gifts;
+
   Birthday({
     required this.id,
     required this.name,
     required this.date,
-  });
+    List<String>? gifts,
+  }) : gifts = gifts ?? [];
 }

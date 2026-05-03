@@ -50,4 +50,29 @@ class StorageService {
       logError(e, st);
     }
   }
+
+  Future<void> addGift(String birthdayId, String gift) async {
+    try {
+      final birthday = _box.get(birthdayId);
+      if (birthday != null) {
+        birthday.gifts.add(gift);
+        await birthday.save();
+      }
+    } catch (e, st) {
+      logError(e, st);
+    }
+  }
+
+  Future<void> removeGift(String birthdayId, String gift) async {
+    try {
+      final birthday = _box.get(birthdayId);
+      if (birthday != null) {
+        birthday.gifts.remove(gift);
+        await birthday.save();
+      }
+    } catch (e, st) {
+      logError(e, st);
+    }
+  }
 }
+
